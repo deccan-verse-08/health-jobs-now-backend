@@ -6,12 +6,15 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,13 +35,15 @@ public class JobSeeker {
     private Long id;
 
   
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     private String resumeUrl;
+    
+    private String profilePicUrl;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "job_seeker_skills",
             joinColumns = @JoinColumn(name = "job_seeker_id")
@@ -46,6 +51,12 @@ public class JobSeeker {
     @Column(name = "skill")
     private List<String> skills;
 
-    private String experienceLevel; // Fresher, Mid, Senior
+
+    @Min(0)
+    @Max(600) 
+    @Column(nullable = false)
+    private Integer experienceMonths;
+
+    
 
 }
