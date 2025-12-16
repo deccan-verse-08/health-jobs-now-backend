@@ -11,13 +11,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "applications")
 @Builder
+@Table(
+	name = "applications",
+	uniqueConstraints = {
+	@UniqueConstraint(columnNames = {"job_id", "jobseeker_id"})
+	})
 public class Application {
 	
 	@Id
@@ -34,6 +39,7 @@ public class Application {
 	
 	private String resumeUrl;
 	
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.PENDING;
 
@@ -41,6 +47,7 @@ public class Application {
 		PENDING,SHORTLISTED,REJECTED,HIRED
 	}
 	
+	@Builder.Default
 	private LocalDateTime appliedAt = LocalDateTime.now();
 	
 

@@ -87,8 +87,9 @@ public class JobSeekerServiceImpl implements JobSeekerService{
         Application application = Application.builder()
                 .job(job)
                 .jobSeeker(jobSeeker)
-                .status(Application.Status.PENDING)
-                .appliedAt(java.time.LocalDateTime.now())
+                
+                
+                .resumeUrl(jobSeeker.getResumeUrl())
                 .build();
         applicationRepository.save(application);
 
