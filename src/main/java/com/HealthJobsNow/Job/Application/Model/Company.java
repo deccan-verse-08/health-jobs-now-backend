@@ -21,8 +21,7 @@ public class Company {
     private String website;
     private String companyBannerUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "employer_id", nullable = false)
-    private Employer employer;
+    
+    
     
 }

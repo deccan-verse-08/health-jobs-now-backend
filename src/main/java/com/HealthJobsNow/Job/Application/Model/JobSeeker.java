@@ -56,7 +56,4 @@ public class JobSeeker {
     @Max(600) 
     @Column(nullable = false)
     private Integer experienceMonths;
-
-    
-
 }
