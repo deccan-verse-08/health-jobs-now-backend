@@ -63,7 +63,7 @@ public class AuthController {
 	            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword()));
 
 	        }catch(AuthenticationException exception){
-	            Map<String,Object> map = new HashMap();
+	            Map<String,Object> map = new HashMap<>();
 	            map.put("message","Bad Credentials");
 	            map.put("status",false);
 	            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
@@ -112,7 +112,7 @@ public class AuthController {
     	            .name(signUpRequest.getName())
     	            .email(signUpRequest.getEmail())
     	            .phone(signUpRequest.getPhone())
-    	            .password(encoder.encode(signUpRequest.getPassword()))
+    	            .password(signUpRequest.getPassword())
     	            .role(UserRole.EMPLOYER)
     	            .build();
 	    	userService.createUser(user);

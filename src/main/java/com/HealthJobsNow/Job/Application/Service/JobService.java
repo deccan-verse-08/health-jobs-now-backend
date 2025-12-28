@@ -18,8 +18,9 @@ public interface JobService {
 
 	List<JobResponse> getAllActiveJobs();
 	
+	List<JobResponse> getAllClosedJobs();
 	
-	 JobResponse getJobById(Long jobId);
+	JobResponse getJobById(Long jobId);
 	 
 	 
 	List<JobResponse> getAllJobsByCompany();

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.HealthJobsNow.Job.Application.Dto.CompanyRequest;
 import com.HealthJobsNow.Job.Application.Dto.CompanyResponse;
 import com.HealthJobsNow.Job.Application.Model.Company;
+import com.HealthJobsNow.Job.Application.Model.CompanyStatus;
 import com.HealthJobsNow.Job.Application.Model.Employer;
 import com.HealthJobsNow.Job.Application.Repository.CompanyRepository;
 import com.HealthJobsNow.Job.Application.Repository.EmployerRepository;
@@ -19,8 +20,9 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class CompanyServiceImpl implements CompanyService{
-	private final CompanyRepository companyRepository;
+public class CompanyServiceImpl implements CompanyService {
+
+    private final CompanyRepository companyRepository;
     private final EmployerRepository employerRepository;
     private final AuthUtil authUtil;
 
@@ -28,6 +30,10 @@ public class CompanyServiceImpl implements CompanyService{
     public CompanyResponse createCompany(CompanyRequest request) {
 
         Employer employer = getLoggedInEmployer();
+
+        if (employer.getCompany() != null) {
+            throw new RuntimeException("Company already exists for this employer");
+        }
 
         if (companyRepository.existsByName(request.getName())) {
             throw new RuntimeException("Company name already exists");
@@ -38,50 +44,46 @@ public class CompanyServiceImpl implements CompanyService{
         company.setAddress(request.getAddress());
         company.setWebsite(request.getWebsite());
         company.setCompanyBannerUrl(request.getCompanyBannerUrl());
+        company.setStatus(CompanyStatus.PENDING);
         company.setCreatedBy(employer);
 
+        companyRepository.save(company);
+
+        // 🔗 VERY IMPORTANT
+        employer.setCompany(company);
+        employerRepository.save(employer);
+
+        return mapToResponse(company);
+    }
+
+    @Override
+    public CompanyResponse updateCompany(CompanyRequest request) {
+
+        Employer employer = getLoggedInEmployer();
+
+        Company company = employer.getCompany();
+        if (company == null) {
+            throw new RuntimeException("Company not created yet");
+        }
+
+        company.setAddress(request.getAddress());
+        company.setWebsite(request.getWebsite());
+        company.setCompanyBannerUrl(request.getCompanyBannerUrl());
         companyRepository.save(company);
 
         return mapToResponse(company);
     }
 
     @Override
-    public CompanyResponse updateCompany(Long companyId, CompanyRequest request) {
+    public CompanyResponse getMyCompany() {
 
         Employer employer = getLoggedInEmployer();
 
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new RuntimeException("Company not found"));
-
-        if (!company.getCreatedBy().getId().equals(employer.getId())) {
-            throw new RuntimeException("Unauthorized");
+        if (employer.getCompany() == null) {
+            throw new RuntimeException("Company not created yet");
         }
 
-        company.setAddress(request.getAddress());
-        company.setWebsite(request.getWebsite());
-        company.setCompanyBannerUrl(request.getCompanyBannerUrl());
-
-        return mapToResponse(company);
-    }
-
-    @Override
-    public List<CompanyResponse> getMyCompanies() {
-
-        Employer employer = getLoggedInEmployer();
-
-        return companyRepository.findByCreatedBy(employer)
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
-    }
-
-    @Override
-    public CompanyResponse getCompanyById(Long companyId) {
-
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new RuntimeException("Company not found"));
-
-        return mapToResponse(company);
+        return mapToResponse(employer.getCompany());
     }
 
     private Employer getLoggedInEmployer() {
@@ -96,7 +98,32 @@ public class CompanyServiceImpl implements CompanyService{
                 .address(company.getAddress())
                 .website(company.getWebsite())
                 .companyBannerUrl(company.getCompanyBannerUrl())
+                .status(company.getStatus())
                 .build();
     }
 
+
+
+	@Override
+	public List<Company> getAllCompanies() {
+		// TODO Auto-generated method stub
+		
+		return companyRepository.findAll();
+	}
+
+	@Override
+	public CompanyResponse getCompanyById(Long companyId) {
+	    Company company = companyRepository.findById(companyId).orElseThrow(()->new RuntimeException("No Company found"));
+	    
+		return mapToResponse(company);
+	}
+
+	@Override
+	public CompanyResponse validateCompany(Long id ,String status) {
+        Company company = companyRepository.findById(id).orElseThrow(()->new RuntimeException("Company not found"));
+        company.setStatus(CompanyStatus.valueOf(status));
+		return mapToResponse(company);
+	}
+
+	
 }

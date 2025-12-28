@@ -4,14 +4,25 @@ import java.util.List;
 
 import com.HealthJobsNow.Job.Application.Dto.CompanyRequest;
 import com.HealthJobsNow.Job.Application.Dto.CompanyResponse;
+import com.HealthJobsNow.Job.Application.Model.Company;
 
 public interface CompanyService {
 	CompanyResponse createCompany(CompanyRequest request);
 
-    CompanyResponse updateCompany(Long companyId, CompanyRequest request);
+    CompanyResponse updateCompany(CompanyRequest request);
 
-    List<CompanyResponse> getMyCompanies();
+    
+    
+    CompanyResponse validateCompany(Long id,String status);
 
-    CompanyResponse getCompanyById(Long companyId);
+	CompanyResponse getMyCompany();
+	
+	CompanyResponse getCompanyById(Long id);
+	
+	List<Company> getAllCompanies();
+
+	
+
+	
 
 }

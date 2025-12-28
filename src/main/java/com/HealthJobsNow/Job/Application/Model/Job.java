@@ -15,11 +15,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Table(name = "jobs")
 public class Job {
@@ -55,11 +59,13 @@ public class Job {
     @Column(nullable = false)
     private JobType jobType;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobStatus status = JobStatus.ACTIVE;
 
-    @Column(nullable = false)
+    @Builder.Default
+    @Column(nullable = false , updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum JobStatus {

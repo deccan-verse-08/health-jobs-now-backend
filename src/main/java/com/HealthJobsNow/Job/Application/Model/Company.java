@@ -2,6 +2,8 @@ package com.HealthJobsNow.Job.Application.Model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,10 +23,15 @@ public class Company {
     private String name;
 
     private String address;
+    @Column(nullable = false, unique = true)
     private String website;
     private String companyBannerUrl;
 
     @ManyToOne
-    @JoinColumn(name = "created_by_employer_id", nullable = false)
+    @JoinColumn(name = "created_by_user_id", nullable = false)
     private Employer createdBy;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CompanyStatus status;
 }

@@ -1,5 +1,7 @@
 package com.HealthJobsNow.Job.Application.Dto;
 
+import com.HealthJobsNow.Job.Application.Model.CompanyStatus;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,5 +13,6 @@ public class CompanyResponse {
     private String address;
     private String website;
     private String companyBannerUrl;
+    private CompanyStatus status;
 
 }
